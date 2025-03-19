@@ -20,5 +20,13 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### For BD create schema "notes_db" and use this to create table notes:
+```
+CREATE TABLE notes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    content VARCHAR(255),
+    x INT,
+    top INT
+);
+```
+Paste MySQL password to server/src/main/resources/application.properties

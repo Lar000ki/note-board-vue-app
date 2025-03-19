@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="addNote">Add Note</button>
+    <button class="add-button" @click="addNote">Add Note</button>
     <note-item
       v-for="note in notes"
       :key="note.id"
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import NoteItem from './NoteItem.vue';
 
 export default {
@@ -24,36 +25,42 @@ export default {
       notes: [],
     };
   },
+  mounted() {
+    this.fetchNotes();
+  },
   methods: {
-    addNote() {
+    async fetchNotes() {
+      const response = await axios.get('http://localhost:8080/api/notes');
+      this.notes = response.data;
+    },
+    async addNote() {
       const newNote = {
-        id: Date.now(),
         content: '',
         top: 100,
         left: 100,
       };
-      this.notes.push(newNote);
+      const response = await axios.post('http://localhost:8080/api/notes', newNote);
+      this.notes.push(response.data);
     },
-    deleteNote(noteId) {
+    async deleteNote(noteId) {
+      await axios.delete(`http://localhost:8080/api/notes/${noteId}`);
       this.notes = this.notes.filter(note => note.id !== noteId);
     },
-    updateNotePosition(id, top, left) {
-      const note = this.notes.find(note => note.id === id);
+    async updateNotePosition(id, top, left) {
+      const note = this.notes.find(n => n.id === id);
       if (note) {
         note.top = top;
         note.left = left;
+        await axios.put(`http://localhost:8080/api/notes/${id}`, note);
       }
     },
-    updateNoteContent(id, content) {
-      const note = this.notes.find(note => note.id === id);
+    async updateNoteContent(id, content) {
+      const note = this.notes.find(n => n.id === id);
       if (note) {
         note.content = content;
+        await axios.put(`http://localhost:8080/api/notes/${id}`, note);
       }
     },
   },
 };
 </script>
-
-<style scoped>
-/* Добавь стили для кнопки и общего контейнера */
-</style>
